@@ -301,7 +301,7 @@ peer: 2001:0db8:1::7
 ```
 
 ### broadcast
-Default value: nono (but see comment on whole section above)
+Default value: none (but see comment on whole section above)
 This item can be specified multiple times.
 It specifies where to send broadcasts. The value comes in three forms:
   * `*` (asterisk)

@@ -101,23 +101,27 @@ class GeneratorThread(threading.Thread):
 		TCPHandler.send_announce(message)
 	
 	def form_announcement_message(self,cluster,instance_dict):
-		instance_information = ""
+		identity_bin = Config.identity.encode("utf-8")
+		cluster_bin = cluster.encode("utf-8")
+		instance_information = b""
 		#struct.pack(...p...) doesn't work (?)
 		for (k,v) in instance_dict.items():
+			k = k.encode("utf-8")
 			instance_information += struct.pack("!B",len(k)) + k
 			instance_information += struct.pack("!Q",int(v.end_of_life*1000))
 			if v.extra_info:
-				instance_information += struct.pack("!B",len(v.extra_info)) + v.extra_info
+				extra_info_bin = v.extra_info.encode("utf-8")
+				instance_information += struct.pack("!B",len(extra_info_bin)) + extra_info_bin
 			else:
 				instance_information += struct.pack("!B",0)
-		announcement_end_of_life = time.time() + (Config.announcement_interval_max*2 / 1000.0)
-		length = 5 + 4 + 1 + 4 + 1+len(Config.identity) + 1+len(cluster) + len(instance_information)
-		message = "vagus"
+		announcement_end_of_life = int(time.time() + (Config.announcement_interval_max*2 / 1000.0))
+		length = 5 + 4 + 1 + 4 + 1+len(identity_bin) + 1+len(cluster_bin) + len(instance_information)
+		message = b"vagus"
 		message+= struct.pack("!I",length)
 		message+= struct.pack("!B",1) #type=announcement
 		message+= struct.pack("!I",announcement_end_of_life)
-		message+= struct.pack("!B",len(Config.identity)) + Config.identity
-		message+= struct.pack("!B",len(cluster)) + cluster
+		message+= struct.pack("!B",len(identity_bin)) + identity_bin
+		message+= struct.pack("!B",len(cluster_bin)) + cluster_bin
 		message+= instance_information
 		
 		return message

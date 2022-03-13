@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import Config
 import argparse
 import logging
@@ -20,7 +21,7 @@ args=parser.parse_args()
 if not Config.initialize(args.config_file):
 	sys.exit(1)
 if args.command=="checkconfig":
-	print "Configuration appears ok"
+	print("Configuration appears ok")
 	sys.exit(0)
 
 logging.config.fileConfig(args.loggingconf)

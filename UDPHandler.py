@@ -1,3 +1,4 @@
+from __future__ import print_function
 import Config
 import getifaddrs
 import AnnouncementHandler
@@ -107,4 +108,4 @@ if __name__ == "__main__":
 	Config.initialize("vagus.ini")
 	initialize()
 	send_announce("foo")
-	print "done"
+	print("done")

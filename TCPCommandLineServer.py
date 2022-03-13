@@ -1,9 +1,13 @@
-import SocketServer
+from __future__ import print_function
+try:
+	import SocketServer as socketserver
+except:
+	import socketserver
 import threading
 import logging
 import socket
 
-class CommandRequestHandler(SocketServer.StreamRequestHandler):
+class CommandRequestHandler(socketserver.StreamRequestHandler):
 	def handle(self):
 		self.server.logger.debug("Got connection from %s", self.client_address)
 		try:
@@ -11,22 +15,22 @@ class CommandRequestHandler(SocketServer.StreamRequestHandler):
 				data = self.rfile.readline()
 				if len(data)==0: #socket closed?
 					break
-				command_line = data.rstrip("\r\n")
+				command_line = data.decode("utf-8").rstrip("\r\n")
 				response = self.server.command_callback(command_line)
 				if response==None:
 					break
-				self.wfile.write(response)
-		except IOError, ex:
+				self.wfile.write(response.encode("utf-8"))
+		except IOError as ex:
 			pass
 		self.server.logger.debug("Lost connection from %s", self.client_address)
 
 
 
-class AddrReuseTCPServer(SocketServer.ThreadingTCPServer):
+class AddrReuseTCPServer(socketserver.ThreadingTCPServer):
 	def __init__(self, server_address, RequestHandlerClass):
 		self.allow_reuse_address = True
 		self. address_family = socket.AF_INET6
-		SocketServer.TCPServer.__init__(self,server_address,RequestHandlerClass)
+		socketserver.TCPServer.__init__(self,server_address,RequestHandlerClass)
 
 
 class TCPCommandLineServer(AddrReuseTCPServer):
@@ -50,7 +54,7 @@ if __name__ == "__main__":
 	def test_callback(command_line):
 		global last_command
 		last_command = command_line
-		print "test_callback: command_line=",command_line
+		print("test_callback: command_line=",command_line)
 		return "ok:"+command_line
 	
 	server = TCPCommandLineServer(8720,test_callback)

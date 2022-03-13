@@ -1,3 +1,4 @@
+from __future__ import print_function
 from TCPCommandLineServer import TCPCommandLineServer
 import Config
 import InstanceRegistry
@@ -94,7 +95,7 @@ class ClientInterface(object):
 		
 		try:
 			keepalive_lifetime = int(keepalive_lifetime_str)
-		except ValueError, ex:
+		except ValueError as ex:
 			return None
 		
 		if extra_info!=None and len(extra_info)>255:
@@ -114,7 +115,7 @@ class ClientInterface(object):
 		d = InstanceRegistry.get_global_instance_dict(cluster)
 		r = ""
 		for (k,v) in d.items():
-			item = str(k)
+			item = k
 			if v.extra_info:
 				item += ":" + v.extra_info
 			r += item + "\n"
@@ -128,7 +129,7 @@ class ClientInterface(object):
 		d = InstanceRegistry.get_global_instance_dict(cluster)
 		r = ""
 		for (k,v) in d.items():
-			item = str(k)
+			item = k
 			if v.source==None:
 				item += ":" + Config.identity
 			else:
@@ -160,7 +161,7 @@ class ClientInterface(object):
 		
 		try:
 			keepalive_lifetime = int(keepalive_lifetime_str)
-		except ValueError, ex:
+		except ValueError as ex:
 			return None
 		
 		if extra_info!=None and len(extra_info)>255:
@@ -181,7 +182,7 @@ class ClientInterface(object):
 	def handle_getvaguslist(self,arguments):
 		d = VagusRegistry.get_vagus_dict()
 		r=""
-		for k,v in d.iteritems():
+		for k,v in d.items():
 			addr = v[2][0] if v[2]!=None else ""
 			r += "%s:%d:%d:%s\n"%(k,v[0]*1000,v[1]*1000,addr)
 		return r+"\n"
@@ -209,18 +210,18 @@ if __name__ == "__main__":
 	
 	s.send("poll giraffes\n")
 	r = s.recv(1024)
-	print "r=",r
+	print("r=",r)
 	assert r=="\n"
 	
 	s.send("keepalive giraffes:1:500\n")
 	r = s.recv(1)
-	print "r=",r
+	print("r=",r)
 	s.send("keepalive giraffes:2:1500:durian\n")
 	r = s.recv(1)
-	print "r=",r
+	print("r=",r)
 	s.send("poll giraffes\n")
 	r = s.recv(1024)
-	print "r=",r
+	print("r=",r)
 	assert len(r.split('\n'))==4
 	assert "1" in r
 	assert "2" in r
@@ -235,17 +236,17 @@ if __name__ == "__main__":
 	time.sleep(0.550)
 	s.send("poll giraffes\n")
 	r = s.recv(1024)
-	print "r=",r
+	print("r=",r)
 	assert len(r.split("\n"))==3
 	
 	time.sleep(1.050)
 	s.send("poll giraffes\n")
 	r = s.recv(1024)
-	print "r=",r
+	print("r=",r)
 	assert r=="\n"
 	
 	s.close()
 	
-	print "stopping"
+	print("stopping")
 	ci.stop()
 

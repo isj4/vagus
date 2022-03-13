@@ -1,5 +1,8 @@
 from collections import OrderedDict
-import ConfigParser
+try:
+	import configparser
+except:
+	import ConfigParser as configparser
 import socket
 import sys
 import string
@@ -106,7 +109,10 @@ def valudate_broadcast(s):
 	return s
 
 def initialize(filename):
-	config = ConfigParser.RawConfigParser(dict_type=MultiOrderedDict)
+	if sys.version[0]>='3':
+		config = configparser.RawConfigParser(dict_type=MultiOrderedDict, strict=False)
+	else:
+		config = configparser.RawConfigParser(dict_type=MultiOrderedDict)
 	config.read([filename])
 	
 	global identity

@@ -69,7 +69,7 @@ class TCPHandlerThread(threading.Thread):
 		client_sockets = {} #fd->(address,inbuf)
 		while True:
 			
-			rset = [listen_socket]+client_sockets.keys()
+			rset = [listen_socket]+list(client_sockets.keys())
 			(readable_fds,_,_) = select.select(rset,[],[])
 			
 			for rfd in readable_fds:
@@ -94,7 +94,7 @@ class TCPHandlerThread(threading.Thread):
 								del client_sockets[rfd]
 							else:
 								client_sockets[rfd] = (client_sockets[rfd][0],newbuf)
-					except socket.error, ex:
+					except socket.error as ex:
 						logger.debug("Got error while reading on fd %d: %s",rfd.fileno(),ex)
 						rfd.close()
 						del client_sockets[rfd]
@@ -133,7 +133,7 @@ class TCPOutThread(threading.Thread):
 						else:
 							s.connect(("::ffff:"+os.peer_addr,Config.tcp.port))
 						logger.debug("Initiated connection to %s",os.peer_addr)
-					except socket.error, ex:
+					except socket.error as ex:
 						if ex.errno==errno.EINPROGRESS:
 							pass #fine, excepected
 						else:
@@ -202,6 +202,6 @@ def send_announce(datagram):
 		out_sockets_lock.acquire()
 		for os in out_sockets:
 			os.out_buf += datagram
-		out_sockets_wakeup_pipe[1].send("d")
+		out_sockets_wakeup_pipe[1].send(b"d")
 	finally:
 		out_sockets_lock.release()

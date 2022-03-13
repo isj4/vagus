@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import print_function
 
 # Based on https://gist.github.com/provegard/1536682, which was
 # Based on getifaddrs.py from pydlnadms [http://code.google.com/p/pydlnadms/].
@@ -209,4 +210,4 @@ def get_network_interfaces():
 
 if __name__ == '__main__':
 	for ni in get_network_interfaces():
-		print ni
+		print(ni)

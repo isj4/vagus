@@ -19,11 +19,12 @@ def process_message(message,source_address):
 		return
 	if len(message)<5+4+1:
 		return
-	if message[0:5]!="vagus":
+	if message[0:5].decode("utf-8")!="vagus":
 		return
 	(signature,length,message_type) = struct.unpack("!5siB",message[0:10])
 	payload = message[10:]
 	if length!=len(message):
+		logger.warn("incorrect length")
 		return
 	
 	logger.debug("Got valid vagus message, type=0x%x, length=%d", message_type, length)
@@ -53,7 +54,7 @@ def process_announcement(payload,source_address):
 	if len(payload)-p < cluster_id_length:
 		logger.debug("Got invalid payload")
 		return
-	cluster_id = payload[p:p+cluster_id_length]
+	cluster_id = payload[p:p+cluster_id_length].decode("utf-8")
 	p += cluster_id_length
 	instance_information = []
 	while p<len(payload):
@@ -65,7 +66,7 @@ def process_announcement(payload,source_address):
 		if len(payload)-p < instance_id_length:
 			logger.debug("Got invalid payload, instance_id_length=%d",instance_id_length)
 			return
-		instance_id = payload[p:p+instance_id_length]
+		instance_id = payload[p:p+instance_id_length].decode("utf-8")
 		p += instance_id_length
 		if len(payload)-p < 8+1:
 			logger.debug("Got invalid payload, len(payload)=%d, p=%d",len(payload),p)
@@ -78,7 +79,7 @@ def process_announcement(payload,source_address):
 		if len(payload)-p < extra_information_length:
 			logger.debug("Got invalid payload")
 			return
-		extra_information = payload[p:p+extra_information_length]
+		extra_information = payload[p:p+extra_information_length].decode("utf-8")
 		p += extra_information_length
 		if extra_information=="":
 			extra_information = None

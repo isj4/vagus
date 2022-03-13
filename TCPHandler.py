@@ -143,8 +143,7 @@ class TCPOutThread(threading.Thread):
 					socket_to_out_socket[s] = i
 			rset=[]
 			wset=[]
-			try:
-				out_sockets_lock.acquire()
+			with out_sockets_lock:
 				for os in out_sockets:
 					if os.socket!=None:
 						if os.connected:
@@ -156,8 +155,6 @@ class TCPOutThread(threading.Thread):
 							wset.append(os.socket)
 					else:
 						pass #no socket
-			finally:
-				out_sockets_lock.release()
 			
 			rset.append(out_sockets_wakeup_pipe[0])
 			(readable_fds,writeable_fds,_) = select.select(rset,wset,[],10)
@@ -166,16 +163,13 @@ class TCPOutThread(threading.Thread):
 				i = socket_to_out_socket[wfd]
 				os = out_sockets[i]
 				if os.connected:
-					try:
-						out_sockets_lock.acquire()
+					with out_sockets_lock:
 						if len(os.out_buf)>0:
 							#something to send
 							bytes_sent = os.socket.send(os.out_buf)
 							os.out_buf = os.out_buf[bytes_sent:]
 						else:
 							pass #nothing to send - why was this fd marked writable?
-					finally:
-						out_sockets_lock.release()
 				else: #not connected
 					err = os.socket.getsockopt(socket.SOL_SOCKET,socket.SO_ERROR)
 					if err==0:
@@ -198,10 +192,7 @@ def send_announce(datagram):
 	if out_sockets_wakeup_pipe==None:
 		return
 	global out_sockets
-	try:
-		out_sockets_lock.acquire()
+	with out_sockets_lock:
 		for os in out_sockets:
 			os.out_buf += datagram
 		out_sockets_wakeup_pipe[1].send(b"d")
-	finally:
-		out_sockets_lock.release()

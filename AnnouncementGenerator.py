@@ -27,10 +27,9 @@ def initialize():
 def local_instances_changed_callback(cluster):
 	global anything_changed
 	logger.debug("in local_instances_changed_callback():")
-	changed_cv.acquire()
-	anything_changed = True
-	changed_cv.notify()
-	changed_cv.release()
+	with changed_cv:
+		anything_changed = True
+		changed_cv.notify()
 
 #python's min() returns none on min(...None..)
 def min_ignoring_none(a,b):
@@ -54,14 +53,13 @@ class GeneratorThread(threading.Thread):
 				#logger.debug("enforcing minimum interval")
 				t = next_earliest_send-now
 				time.sleep(next_earliest_send-now)
-			changed_cv.acquire()
-			while not anything_changed:
-				now = time.time()
-				if now>=next_latest_send or anything_changed:
-					break
-				changed_cv.wait(next_latest_send-now)
-			anything_changed = False
-			changed_cv.release()
+			with changed_cv:
+				while not anything_changed:
+					now = time.time()
+					if now>=next_latest_send or anything_changed:
+						break
+					changed_cv.wait(next_latest_send-now)
+				anything_changed = False
 			
 			self.send_announcements()
 			now = time.time()

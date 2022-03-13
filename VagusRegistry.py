@@ -8,22 +8,16 @@ lock = threading.Lock()
 
 
 def update_vagus_instance(vagus_id,end_of_life,source_address):
-	try:
-		lock.acquire()
+	with lock:
 		vagus_instances[vagus_id] = (time.time(),end_of_life,source_address)
-	finally:
-		lock.release()
 
 
 def expire():
 	now = time.time()
-	try:
-		lock.acquire()
+	with lock:
 		for k in vagus_instances.keys():
 			if vagus_instances[k][1]<now:
 				del vagus_instances[k]
-	finally:
-		lock.release()
 
 def get_vagus_dict():
 	expire()

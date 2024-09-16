@@ -12,7 +12,7 @@ It is not a full-fledged HA system. It merely provides a mechanism for building 
 
 # Platforms
 Tested on:
-  * Python 2.7.6, 2.7.12
+  * Python 2.7.6, 2.7.12, 3.6.15, 3.11.9
   * Linux 3.11.10, 4.4.57, 4.4.62
 
 It will not work on Windows because it needs to discover network interfaces and addresses using the getifaddrs() system call.

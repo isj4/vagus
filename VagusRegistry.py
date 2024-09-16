@@ -15,7 +15,7 @@ def update_vagus_instance(vagus_id,end_of_life,source_address):
 def expire():
 	now = time.time()
 	with lock:
-		for k in vagus_instances.keys():
+		for k in list(vagus_instances.keys()):
 			if vagus_instances[k][1]<now:
 				del vagus_instances[k]
 

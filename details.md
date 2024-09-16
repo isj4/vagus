@@ -284,7 +284,7 @@ Which TCP port to listen for client commands.
 
 ## udp section
 This section contains configuration for how to use UDP unicast and broadcast.
-If no `peer` nor any `broacast` items are specified then the default is `broacast: *`
+If no `peer` nor any `broadcast` items are specified then the default is `broadcast: *`
 
 ### port
 Default value: 8721

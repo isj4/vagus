@@ -47,7 +47,7 @@ def process_announcement(payload,source_address):
 	if len(payload)-p < vagus_id_length:
 		logger.debug("Got invalid payload: invalid vagus_id_length %d",vagus_id_length)
 		return
-	vagus_id = payload[p:p+vagus_id_length]
+	vagus_id = payload[p:p+vagus_id_length].decode("utf-8")
 	p += vagus_id_length
 	(cluster_id_length,) = struct.unpack("!B",payload[p:p+1])
 	p += 1

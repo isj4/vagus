@@ -4,6 +4,10 @@ import sys
 import time
 import socket
 
+if len(sys.argv)<2:
+	print("Usage: %s <cluster name> <instance> [<extra_info>]"%sys.argv[0], file=sys.stderr)
+	sys.exit(1)
+
 cluster = sys.argv[1]
 identifer = sys.argv[2]
 extra_info = sys.argv[3] if len(sys.argv)>3 else None
